@@ -8,13 +8,11 @@ import org.junit.Test;
 
 public class CanvasTest {
     private Canvas canvas;
-    private Root root;
 
     @Before
     public void setupCanvas() {
-        this.root = new Root();
-        this.root.connect(new Layer());
-        this.canvas = new Canvas(root);
+        Camera camera = new Camera();
+        this.canvas = new Canvas(camera);
     }
     
     @Test

@@ -5,43 +5,57 @@ import java.awt.geom.AffineTransform;
 import java.util.ArrayList;
 import java.util.List;
 
-public class Camera extends SimpleCompositeNode {
+public class Camera extends Node {
     private AffineTransform viewTransform;
-    private List<Connection> layerConnections;
+    private List<Layer> layers;
 
     public Camera() {
-        layerConnections = new ArrayList<Connection>();
+        layers = new ArrayList<Layer>();
         viewTransform = new AffineTransform();
-    }
-    
-    @Override
-    public void paint(PaintContext paintContext) {
-        paintLayers(paintContext);
-        super.paint(paintContext);
+
+        addPainter(0, LAYER_PAINTER);
     }
 
     private void paintLayers(PaintContext paintContext) {
         Graphics2D graphics = paintContext.getGraphics();
         final AffineTransform startTransform = graphics.getTransform();
-        
+
         graphics.transform(viewTransform);
-        final AffineTransform startViewTransform = graphics.getTransform();
-        
-        for (Connection connection : layerConnections) {   
-            graphics.transform(connection.getTransform());
-            connection.getNode().paint(paintContext);
-            graphics.setTransform(startViewTransform);
+
+        for (Layer layer : layers) {
+            layer.paint(paintContext);
         }
-        
+
         graphics.setTransform(startTransform);
     }
 
-    public void addLayerConnection(Connection connection) {
-        layerConnections.add(connection);
+    public final void paint(PaintContext paintContext) {
+        Graphics2D graphics = paintContext.getGraphics();
+
+        final AffineTransform startTransform = graphics.getTransform();
+        graphics.transform(transform);
+
+        for (Painter painter : painters) {
+            painter.paint(this, paintContext);
+        }
+
+        graphics.setTransform(startTransform);
     }
 
     public void setViewTransform(AffineTransform transform) {
         viewTransform = transform;
     }
 
+    public void addLayer(Layer layer) {
+        layers.add(layer);
+
+    }
+
+    private static final Painter LAYER_PAINTER = new Painter() {
+        @Override
+        public void paint(Node node, PaintContext paintContext) {
+            Camera camera = (Camera) node;
+            camera.paintLayers(paintContext);
+        }
+    };
 }
