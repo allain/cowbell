@@ -5,17 +5,18 @@ package ca.machete.cowbell.examples;
 
 import java.util.List;
 import java.util.Random;
-
 import ca.machete.cowbell.Layout;
 import ca.machete.cowbell.Node;
 
 public class RandomLayout implements Layout {
-    private Random random = new Random();
 
-    @Override
-    public void layout(List<Node> nodes, double width, double height) {
-        for (Node node : nodes) {
-            node.setTransform(1, 0, 0, 1, random.nextDouble()*width, random.nextDouble()*height);
-        }
-    }
+  private final Random random = new Random();
+
+  @Override
+  public void layout(final List<Node> nodes, final double width, final double height) {
+    for (Node node : nodes)
+      node.setTransform(1, 0, 0, 1, random.nextDouble() * (width - node.getWidth()), random
+          .nextDouble()
+          * (height - node.getHeight()));
+  }
 }

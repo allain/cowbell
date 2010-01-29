@@ -1,36 +1,36 @@
 package ca.machete.cowbell.activity;
 
 import java.awt.geom.AffineTransform;
-
 import ca.machete.cowbell.Node;
 
 public class NodeTransformActivity extends TimedActivity {
-    private final Node node;
 
-    private double[] startMatrix = new double[6];
+  private final Node node;
 
-    private double[] targetMatrix = new double[6];
+  private final double[] startMatrix = new double[6];
 
-    public NodeTransformActivity(Node node, AffineTransform target, long startTime, long duration) {
-        super(startTime, duration);
+  private final double[] targetMatrix = new double[6];
 
-        this.node = node;
-        target.getMatrix(targetMatrix);
-    }
+  public NodeTransformActivity(final Node node, final AffineTransform target, final long startTime,
+      final long duration) {
+    super(startTime, duration);
 
-    @Override
-    public void start() {
-        node.getTransform().getMatrix(startMatrix);
-    }
+    this.node = node;
+    target.getMatrix(targetMatrix);
+  }
 
-    @Override
-    public void step(double ratioCompleted) {
-        double[] currentMatrix = new double[6];
-        for (int i = 0; i < 6; i++) {
-            currentMatrix[i] = (targetMatrix[i] - startMatrix[i]) * ratioCompleted + startMatrix[i];
-        }
-        
-        node.setTransform(currentMatrix);
-    }
+  @Override
+  public void start() {
+    node.getTransform().getMatrix(startMatrix);
+  }
+
+  @Override
+  public void step(final double ratioCompleted) {
+    double[] currentMatrix = new double[6];
+    for (int i = 0; i < 6; i++)
+      currentMatrix[i] = (targetMatrix[i] - startMatrix[i]) * ratioCompleted + startMatrix[i];
+
+    node.setTransform(currentMatrix);
+  }
 
 }

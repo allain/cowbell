@@ -1,80 +1,73 @@
 package ca.machete.cowbell.examples;
 
-import java.awt.Color;
-import java.awt.Dimension;
-import java.awt.Graphics2D;
-
+import java.util.List;
+import java.util.Random;
 import javax.swing.JFrame;
-
 import ca.machete.cowbell.BorderPainter;
-import ca.machete.cowbell.Camera;
 import ca.machete.cowbell.Canvas;
 import ca.machete.cowbell.Layer;
 import ca.machete.cowbell.Node;
-import ca.machete.cowbell.PaintContext;
-import ca.machete.cowbell.Painter;
-import ca.machete.cowbell.Root;
 
-public class WorstCaseExample {
-    private static final int NODE_COUNT = 5000;
-    private static final BorderPainter borderPainter = new BorderPainter();
-    private static final Painter squarePainter = new Painter() {
-        @Override
-        public void paint(Node node, PaintContext paintContext) {
-            Graphics2D graphics = paintContext.getGraphics();
-            graphics.setPaint(Color.RED);
-            
-            graphics.fillRect(0, 0, (int) node.getWidth(), (int) node.getHeight());
-        }
-    };
+public class WorstCaseExample extends AbstractExample {
 
-    public static void main(String[] args) {
+  private static final int NODE_COUNT = 100000;
 
-        Root root = new Root();
-        Camera camera = new Camera();
-        final Layer layer = new Layer();
-        layer.addPainter(borderPainter);
-        layer.setSize(600, 500);
-        root.addChild(camera);
-        root.addChild(layer);
-        camera.addLayer(layer);
+  static final BorderPainter borderPainter = new BorderPainter();
 
-        addNodesToLayer(layer);
+  public static void main(final String[] args) {
+    WorstCaseExample example = new WorstCaseExample();
 
-        layer.setLayout(new JitterLayout(3));
+    example.run();
+  }
 
-        root.getScheduler().schedule(new InvalidateLayoutActivity(layer));
+  @Override
+  public void run() {
+    Canvas canvas = buildSimpleCanvas();
 
-        final Canvas canvas = buildCanvas(camera);
+    Layer layer = canvas.getCamera().getLayer(0);
 
-        JFrame frame = wrapCanvasWithFrame(canvas, NODE_COUNT + " nodes");
+    addNodesToLayer(layer, NODE_COUNT);
 
-        frame.setVisible(true);
+    layer.setLayout(new JitterLayout(2));
+
+    layer.getRoot().getScheduler().schedule(new InvalidateLayoutActivity(layer));
+
+    JFrame frame = wrapCanvasWithFrame(canvas, NODE_COUNT + " jitterning nodes with 1 common parent");
+
+    frame.setVisible(true);
+  }
+
+  private static class JitterLayout extends RandomLayout {
+    private final double[] MATRIX = new double[6];
+    
+    private boolean first = true;
+
+    private final Random random = new Random();
+
+    private final double jitterSize;
+
+    public JitterLayout(final double jitterSize) {
+      this.jitterSize = jitterSize;
     }
 
-    private static void addNodesToLayer(final Layer layer) {
-        final double NODE_SIZE = Math.sqrt(600d * 500d / (NODE_COUNT * 1d));
-        for (int nodeCount = 0; nodeCount < NODE_COUNT; nodeCount++) {
-            Node node = new Node();
-            node.addPainter(squarePainter);
-            node.addPainter(borderPainter);
-            node.setSize(NODE_SIZE, NODE_SIZE);
-            layer.addChild(node);
-        }
+    @Override
+    public void layout(final List<Node> nodes, final double width, final double height) {
+      if (first) {
+        super.layout(nodes, width, height);
+        first = false;
+      }
+
+      for (Node node : nodes) {
+        node.getTransform().getMatrix(MATRIX);
+        
+        MATRIX[4] += jitterSize * (0.5-random.nextDouble());
+        MATRIX[4] %= (width - node.getWidth());
+        MATRIX[5] += jitterSize * (0.5-random.nextDouble());
+        MATRIX[5] %= (height - node.getHeight());
+       
+        node.setTransform(MATRIX);
+      }
     }
 
-    private static JFrame wrapCanvasWithFrame(final Canvas canvas, String title) {
-        JFrame frame = new JFrame(title);
-        frame.setContentPane(canvas);
-        frame.pack();
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-        return frame;
-    }
-
-    private static Canvas buildCanvas(Camera camera) {
-        final Canvas canvas = new Canvas(camera);
-        canvas.setPreferredSize(new Dimension(400, 400));
-        canvas.setDoubleBuffered(true);
-        return canvas;
-    }
+  }
 }
