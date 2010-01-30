@@ -4,21 +4,21 @@ import java.awt.geom.AffineTransform;
 
 public class Connection {
 
-  private final Node node;
+    private final Node node;
 
-  private final AffineTransform transform;
+    private final AffineTransform transform;
 
-  public Connection(final Node node, final AffineTransform transform) {
-    this.node = node;
-    this.transform = transform;
-  }
+    public Connection(final Node node, final AffineTransform transform) {
+        this.node = node;
+        this.transform = transform;
+    }
 
-  public Node getNode() {
-    return node;
-  }
+    public Node getNode() {
+        return node;
+    }
 
-  public AffineTransform getTransform() {
-    return transform;
-  }
+    public AffineTransform getTransform() {
+        return transform;
+    }
 
 }

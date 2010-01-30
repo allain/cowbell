@@ -8,20 +8,20 @@ import ca.machete.cowbell.examples.CameraViewTransformActivity;
 
 public class CameraViewTransformActivityTest {
 
-  private Camera camera;
+    private Camera camera;
 
-  @Before
-  public void setupCamera() {
-    camera = new Camera();
-  }
+    @Before
+    public void setupCamera() {
+        camera = new Camera();
+    }
 
-  @Test
-  public void testStartMatrixExtractsProperly() {
-    camera.setViewTransform(5, 0, 0, 5, 0, 0);
-    CameraViewTransformActivity activity = new CameraViewTransformActivity(camera,
-        new AffineTransform(), System.currentTimeMillis(), 1000);
-    activity.start();
-    double[] startMatrix = activity.getStartMatrix();
-    assertEquals(5, startMatrix[0], 0.001);
-  }
+    @Test
+    public void testStartMatrixExtractsProperly() {
+        camera.setViewTransform(5, 0, 0, 5, 0, 0);
+        CameraViewTransformActivity activity = new CameraViewTransformActivity(camera, new AffineTransform(), System
+                        .currentTimeMillis(), 1000);
+        activity.start();
+        double[] startMatrix = activity.getStartMatrix();
+        assertEquals(5, startMatrix[0], 0.001);
+    }
 }

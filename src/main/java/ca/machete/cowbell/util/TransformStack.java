@@ -6,27 +6,27 @@ import java.util.List;
 
 public class TransformStack {
 
-  private List<AffineTransform> transforms;
+    private final List<AffineTransform> transforms;
 
-  public TransformStack() {
-    transforms = new ArrayList<AffineTransform>();
-  }
+    public TransformStack() {
+        transforms = new ArrayList<AffineTransform>();
+    }
 
-  public void push(AffineTransform transform) {
-    if (transforms == null)
-      throw new IllegalArgumentException("Null transform invalid on stack");
+    public void push(final AffineTransform transform) {
+        if (transforms == null)
+            throw new IllegalArgumentException("Null transform invalid on stack");
 
-    transforms.add(transform);
-  }
+        transforms.add(transform);
+    }
 
-  public AffineTransform pop() {
-    return transforms.remove(transforms.size() - 1);
-  }
+    public AffineTransform pop() {
+        return transforms.remove(transforms.size() - 1);
+    }
 
-  public AffineTransform peek() {
-    if (transforms.isEmpty())
-      return null;
+    public AffineTransform peek() {
+        if (transforms.isEmpty())
+            return null;
 
-    return transforms.get(transforms.size() - 1);
-  }
+        return transforms.get(transforms.size() - 1);
+    }
 }

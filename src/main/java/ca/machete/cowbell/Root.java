@@ -6,38 +6,38 @@ import ca.machete.cowbell.activity.Scheduler;
 
 public final class Root extends Node {
 
-  private final Scheduler scheduler;
+    private final Scheduler scheduler;
 
-  public Root() {
-    scheduler = new Scheduler();
-  }
+    public Root() {
+        scheduler = new Scheduler();
+    }
 
-  public Iterable<Layer> getLayers() {
-    List<Layer> layers = new ArrayList<Layer>();
+    public Iterable<Layer> getLayers() {
+        List<Layer> layers = new ArrayList<Layer>();
 
-    for (Node node : getChildren())
-      if (node instanceof Layer)
-        layers.add((Layer) node);
+        for (Node node : getChildren())
+            if (node instanceof Layer)
+                layers.add((Layer) node);
 
-    return layers;
-  }
+        return layers;
+    }
 
-  public Iterable<Camera> getCameras() {
-    List<Camera> cameras = new ArrayList<Camera>();
+    public Iterable<Camera> getCameras() {
+        List<Camera> cameras = new ArrayList<Camera>();
 
-    for (Node node : getChildren())
-      if (node instanceof Camera)
-        cameras.add((Camera) node);
+        for (Node node : getChildren())
+            if (node instanceof Camera)
+                cameras.add((Camera) node);
 
-    return cameras;
-  }
+        return cameras;
+    }
 
-  public Scheduler getScheduler() {
-    return scheduler;
-  }
+    public Scheduler getScheduler() {
+        return scheduler;
+    }
 
-  @Override
-  public Root getRoot() {
-    return this;
-  }
+    @Override
+    public Root getRoot() {
+        return this;
+    }
 }

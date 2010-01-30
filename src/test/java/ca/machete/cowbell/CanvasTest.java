@@ -6,16 +6,16 @@ import org.junit.Test;
 
 public class CanvasTest {
 
-  private Canvas canvas;
+    private Canvas canvas;
 
-  @Before
-  public void setupCanvas() {
-    Camera camera = new Camera();
-    this.canvas = new Canvas(camera);
-  }
+    @Before
+    public void setupCanvas() {
+        Camera camera = new Camera();
+        this.canvas = new Canvas(camera);
+    }
 
-  @Test
-  public void canvasShouldConstructWithoutChildrenByDefault() {
-    assertEquals(0, canvas.getComponentCount());
-  }
+    @Test
+    public void canvasShouldConstructWithoutChildrenByDefault() {
+        assertEquals(0, canvas.getComponentCount());
+    }
 }

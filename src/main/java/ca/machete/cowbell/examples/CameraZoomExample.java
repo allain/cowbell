@@ -10,62 +10,71 @@ import ca.machete.cowbell.activity.InfiniteActivity;
 
 public class CameraZoomExample extends AbstractExample {
 
-  static final int NODE_COUNT = 10000;
+    static final int NODE_COUNT = 10000;
 
-  public static void main(final String[] args) {
-    CameraZoomExample example = new CameraZoomExample();
-    example.run();
-  }
+    public static void main(final String[] args) {
+        CameraZoomExample example = new CameraZoomExample();
 
-  @Override
-  public void run() {
-    final Canvas canvas = buildSimpleCanvas();
+        example.run();
+    }
 
-    final Layer layer = canvas.getCamera().getLayer(0);
-    final Root root = canvas.getCamera().getRoot();
+    @Override
+    public void run() {
+        final Canvas canvas = buildSimpleCanvas();
 
-    addNodesToLayer(layer, NODE_COUNT);
+        final Layer layer = canvas.getCamera().getLayer(0);
+        final Root root = canvas.getCamera().getRoot();
 
-    layer.setLayout(new RandomLayout());
+        addNodesToLayer(layer, NODE_COUNT);
 
-    final Random random = new Random();
+        layer.setLayout(new RandomLayout());
 
-    root.getScheduler().schedule(new InfiniteActivity() {
+        root.getScheduler().schedule(new RandomCameraScheduler(canvas));
 
-      private long lastZoomed = 0;
+        JFrame frame = wrapCanvasWithFrame(canvas, NODE_COUNT + " nodes with random camera transform");
 
-      @Override
-      public void step() {
-        final long currentTime = System.currentTimeMillis();
+        frame.setVisible(true);
+    }
 
-        if (currentTime - lastZoomed >= 1000) {
-          scheduleRandomCameraAnimation(canvas, root, random, currentTime);
+    private final class RandomCameraScheduler extends InfiniteActivity {
 
-          lastZoomed = currentTime;
+        private final Random random;
+
+        private final Canvas canvas;
+
+        private long lastZoomed = 0;
+
+        private RandomCameraScheduler(final Canvas canvas) {
+            this.random = new Random();
+            this.canvas = canvas;
         }
-      }
 
-      private void scheduleRandomCameraAnimation(final Canvas canvas, final Root root, final Random random,
-          final long currentTime) {
-        double randomScale = random.nextDouble() * 2d + 1d;
-        double randomX = random.nextDouble() * 500;
-        double randomY = random.nextDouble() * 500;
+        @Override
+        public void step() {
+            final long currentTime = System.currentTimeMillis();
 
-        AffineTransform newTransform = createRandomCameraTransform(randomScale, randomX, randomY);
+            if (currentTime - lastZoomed >= 1000) {
+                scheduleRandomCameraAnimation(canvas, currentTime);
 
-        canvas.getCamera().animateViewToTransform(newTransform, 1000);
-      }
+                lastZoomed = currentTime;
+            }
+        }
 
-      private AffineTransform createRandomCameraTransform(final double scale, final double tx, final double ty) {
-        AffineTransform newTransform = new AffineTransform();
-        newTransform.translate(-tx, -ty);
-        newTransform.scale(scale, scale);
-        return newTransform;
-      }
-    });
+        private void scheduleRandomCameraAnimation(final Canvas canvas, final long currentTime) {
+            double randomScale = random.nextDouble() * 2d + 1d;
+            double randomX = random.nextDouble() * 500;
+            double randomY = random.nextDouble() * 500;
 
-    JFrame frame = wrapCanvasWithFrame(canvas, NODE_COUNT + " nodes with random camera transform");
+            AffineTransform newTransform = createRandomCameraTransform(randomScale, randomX, randomY);
 
-    frame.setVisible(true);
-  }
+            canvas.getCamera().animateViewToTransform(newTransform, 1000);
+        }
+
+        private AffineTransform createRandomCameraTransform(final double scale, final double tx, final double ty) {
+            AffineTransform newTransform = new AffineTransform();
+            newTransform.translate(-tx, -ty);
+            newTransform.scale(scale, scale);
+            return newTransform;
+        }
+    }
 }

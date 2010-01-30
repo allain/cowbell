@@ -5,73 +5,72 @@ import java.awt.Color;
 import java.awt.Dimension;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import ca.machete.cowbell.BorderPainter;
 import ca.machete.cowbell.Camera;
 import ca.machete.cowbell.Canvas;
 import ca.machete.cowbell.Layer;
 import ca.machete.cowbell.Node;
-import ca.machete.cowbell.Painter;
 import ca.machete.cowbell.Root;
+import ca.machete.cowbell.painters.BorderPainter;
+import ca.machete.cowbell.painters.Painter;
 import ca.machete.cowbell.painters.SimpleBackgroundPainter;
 
 public abstract class AbstractExample implements Runnable {
 
-  protected static final BorderPainter borderPainter = new BorderPainter();
+    protected static final BorderPainter borderPainter = new BorderPainter();
 
-  public AbstractExample() {
-    super();
-  }
-
-  protected final void addNodesToLayer(final Layer layer, final int nodeCount) {
-    final double NODE_SIZE = Math.sqrt(600d * 500d / (nodeCount * 1d));
-    for (int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++) {
-      Node node = new Node();
-      node.addPainter(getBackgroundPainter(nodeIndex));
-      node.addPainter(borderPainter);
-      node.setSize(NODE_SIZE, NODE_SIZE);
-      layer.addChild(node);
+    public AbstractExample() {
+        super();
     }
-  }
 
-  private final Painter[] nodeBackgroundPainters = new Painter[] {
-      new SimpleBackgroundPainter(Color.RED), new SimpleBackgroundPainter(Color.BLUE),
-      new SimpleBackgroundPainter(Color.YELLOW), new SimpleBackgroundPainter(Color.GREEN),
-      new SimpleBackgroundPainter(Color.ORANGE) };
+    protected final void addNodesToLayer(final Layer layer, final int nodeCount) {
+        final double NODE_SIZE = Math.sqrt(600d * 500d / (nodeCount * 1d));
+        for (int nodeIndex = 0; nodeIndex < nodeCount; nodeIndex++) {
+            Node node = new Node();
+            node.addPainter(getBackgroundPainter(nodeIndex));
+            node.addPainter(borderPainter);
+            node.setSize(NODE_SIZE, NODE_SIZE);
+            layer.addChild(node);
+        }
+    }
 
-  private Painter getBackgroundPainter(final int nodeIndex) {
-    return nodeBackgroundPainters[nodeIndex % nodeBackgroundPainters.length];
-  }
+    private final Painter[] nodeBackgroundPainters = new Painter[] { new SimpleBackgroundPainter(Color.RED),
+                    new SimpleBackgroundPainter(Color.BLUE), new SimpleBackgroundPainter(Color.YELLOW),
+                    new SimpleBackgroundPainter(Color.GREEN), new SimpleBackgroundPainter(Color.ORANGE) };
 
-  protected JFrame wrapCanvasWithFrame(final Canvas canvas, final String title) {
-    JFrame frame = new JFrame(title);
-    frame.getContentPane().setLayout(new BorderLayout());
-    frame.getContentPane().add(new JLabel(title), BorderLayout.NORTH);
-    frame.getContentPane().add(canvas, BorderLayout.CENTER);
-    frame.pack();
-    frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-    return frame;
-  }
+    private Painter getBackgroundPainter(final int nodeIndex) {
+        return nodeBackgroundPainters[nodeIndex % nodeBackgroundPainters.length];
+    }
 
-  protected Canvas buildCanvas(final Camera camera) {
-    final Canvas canvas = new Canvas(camera);
-    canvas.setPreferredSize(new Dimension(400, 400));
-    canvas.setDoubleBuffered(true);
-    return canvas;
-  }
+    protected JFrame wrapCanvasWithFrame(final Canvas canvas, final String title) {
+        JFrame frame = new JFrame(title);
+        frame.getContentPane().setLayout(new BorderLayout());
+        frame.getContentPane().add(new JLabel(title), BorderLayout.NORTH);
+        frame.getContentPane().add(canvas, BorderLayout.CENTER);
+        frame.pack();
+        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        return frame;
+    }
 
-  protected Canvas buildSimpleCanvas() {
-    Root root = new Root();
-    Camera camera = new Camera();
-    final Layer layer = new Layer();
-    layer.addPainter(new SimpleBackgroundPainter(Color.WHITE));
-    layer.addPainter(WorstCaseExample.borderPainter);
-    layer.setSize(600, 500);
-    root.addChild(camera);
-    root.addChild(layer);
-    camera.addLayer(layer);
+    protected Canvas buildCanvas(final Camera camera) {
+        final Canvas canvas = new Canvas(camera);
+        canvas.setPreferredSize(new Dimension(400, 400));
+        canvas.setDoubleBuffered(true);
+        return canvas;
+    }
 
-    return new Canvas(camera);
-  }
+    protected Canvas buildSimpleCanvas() {
+        Root root = new Root();
+        Camera camera = new Camera();
+        final Layer layer = new Layer();
+        layer.addPainter(new SimpleBackgroundPainter(Color.WHITE));
+        layer.addPainter(WorstCaseExample.borderPainter);
+        layer.setSize(600, 500);
+        root.addChild(camera);
+        root.addChild(layer);
+        camera.addLayer(layer);
 
-  public abstract void run();
+        return new Canvas(camera);
+    }
+
+    public abstract void run();
 }
