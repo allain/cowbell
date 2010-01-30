@@ -94,14 +94,15 @@ public class Node {
   public void paint(final PaintContext paintContext) {
     Graphics2D graphics = paintContext.getGraphics();
 
-    final AffineTransform startTransform = graphics.getTransform();
     if (getFullBounds().intersects(graphics.getClip().getBounds2D())) {
+      paintContext.pushTransform();
+      
       graphics.transform(transform);
 
       for (Painter painter : painters)
         painter.paint(this, paintContext);
 
-      graphics.setTransform(startTransform);
+      paintContext.popTransform();
     }
 
   }

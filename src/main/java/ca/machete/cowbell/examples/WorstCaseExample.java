@@ -10,7 +10,7 @@ import ca.machete.cowbell.Node;
 
 public class WorstCaseExample extends AbstractExample {
 
-  private static final int NODE_COUNT = 100000;
+  private static final int NODE_COUNT = 10000;
 
   static final BorderPainter borderPainter = new BorderPainter();
 

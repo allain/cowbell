@@ -31,27 +31,28 @@ public class Camera extends Node {
 
   private void paintLayers(final PaintContext paintContext) {
     Graphics2D graphics = paintContext.getGraphics();
-    final AffineTransform startTransform = graphics.getTransform();
-
+    paintContext.pushTransform();
+    
     graphics.transform(viewTransform);
 
     for (Layer layer : layers)
       layer.paint(paintContext);
 
-    graphics.setTransform(startTransform);
+    paintContext.popTransform();
   }
 
   @Override
   public final void paint(final PaintContext paintContext) {
     Graphics2D graphics = paintContext.getGraphics();
 
-    final AffineTransform startTransform = graphics.getTransform();
+    paintContext.pushTransform();
+    
     graphics.transform(transform);
 
     for (Painter painter : painters)
       painter.paint(this, paintContext);
 
-    graphics.setTransform(startTransform);
+    paintContext.popTransform();
   }
 
   public AffineTransform getViewTransform() {
