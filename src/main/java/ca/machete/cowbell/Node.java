@@ -4,18 +4,28 @@ import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
+import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import ca.machete.cowbell.layouts.Layout;
 import ca.machete.cowbell.painters.Painter;
+import ca.machete.cowbell.util.NodeTransform;
 
 public class Node {
+    private static final java.awt.geom.Point2D.Double POINT2D_ORIGIN = new Point2D.Double(0,0);
 
+    private static final Point2D TMP_POINT = new Point2D.Double();
+    
+    private static final Rectangle2D TMP_RECTANGLE = new Rectangle2D.Double();
+
+    /** Private singleton used in ALL nodes without children. */
     private static final List<Node> EMPTY_CHILDREN = Collections.<Node> emptyList();
 
+    /** Private singleton used in ALL nodes without painters. */
     private static final List<Painter> EMPTY_PAINTERS = Collections.<Painter> emptyList();
 
+    /** Painter responsible for painting children of a node. */
     public static final Painter CHILD_PAINTER = new Painter() {
 
         @Override
@@ -31,9 +41,10 @@ public class Node {
 
     private boolean invalidLayout;
 
+    /** Arbitrary object that can be assigned to a node. */
     private Object model;
 
-    protected final AffineTransform transform;
+    protected final NodeTransform transform;
 
     private List<Node> children;
 
@@ -50,11 +61,12 @@ public class Node {
     }
 
     public Node(final Layout layout) {
-        invalidLayout = true;
         this.layout = (layout == null) ? Layout.Null : layout;
 
+        invalidLayout = true;
+
         fullBounds = null;
-        transform = new AffineTransform();
+        transform = new NodeTransform();
         children = EMPTY_CHILDREN;
         painters = EMPTY_PAINTERS;
     }
@@ -62,10 +74,11 @@ public class Node {
     public final void addChild(final Node node) {
         prepareNodeForChildren();
 
-        if (node.parent == this)
+        if (node.parent == this) {
             children.remove(node);
-        else if (node.parent != null)
+        } else if (node.parent != null) {
             node.parent.removeChild(node);
+        }
 
         children.add(node);
         node.parent = this;
@@ -96,7 +109,7 @@ public class Node {
     public void paint(final PaintContext paintContext) {
         Graphics2D graphics = paintContext.getGraphics();
 
-        if (!getFullBounds().intersects(graphics.getClip().getBounds2D()))
+        if (!isVisibleOnGraphics(graphics))
             return;
 
         paintContext.pushTransform();
@@ -109,27 +122,36 @@ public class Node {
         paintContext.popTransform();
     }
 
+    /**
+     * Calculates whether the current node would be visible if drawn.
+     * 
+     * @param graphics
+     *            Graphics in which we're testing this node's potential
+     *            visibility
+     * @return true if node would be visible if drawn
+     */
+    private boolean isVisibleOnGraphics(Graphics2D graphics) {
+        return getFullBounds().intersects(graphics.getClip().getBounds2D());
+    }
+
     public Rectangle2D getFullBounds() {
         if (fullBounds == null) {
             layout();
-
-            fullBounds = collectFullBounds();
+            
+            fullBounds = collectChildrenBounds();
+            
+            fullBounds.add(transform.transform(POINT2D_ORIGIN, TMP_POINT));
+            fullBounds.add(transform.transform(new Point2D.Double(width, height), TMP_POINT));
         }
 
         return fullBounds;
     }
 
-    private Rectangle2D collectFullBounds() {
-        Rectangle2D fullBounds = new Rectangle2D.Double();
-        fullBounds.add(width, height);
-
-        Point2D topLeft = transform.transform(new Point2D.Double(0, 0), null);
-        Point2D bottomRight = transform.transform(new Point2D.Double(width, height), null);
-        fullBounds.add(topLeft);
-        fullBounds.add(bottomRight);
+    private Rectangle2D collectChildrenBounds() {
+        final Rectangle2D fullBounds = new Rectangle2D.Double();
 
         for (Node node : children)
-            fullBounds.add(node.getFullBounds());
+            fullBounds.add(transform.transform(node.getFullBounds(), TMP_RECTANGLE));
 
         return fullBounds;
     }
@@ -138,6 +160,7 @@ public class Node {
         if (invalidLayout) {
             for (Node node : children)
                 node.layout();
+
             layout.layout(children, width, height);
 
             invalidLayout = false;
@@ -147,6 +170,7 @@ public class Node {
     public void addPainter(final int index, final Painter painter) {
         if (painters == EMPTY_PAINTERS)
             painters = new ArrayList<Painter>();
+
         painters.add(index, painter);
     }
 

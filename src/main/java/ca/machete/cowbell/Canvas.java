@@ -32,10 +32,11 @@ public class Canvas extends JComponent {
 
     @Override
     public void paint(final Graphics graphics) {
-        System.currentTimeMillis();
+        long startTime = System.currentTimeMillis();
         graphics.clipRect(0, 0, getWidth(), getHeight());
         camera.paint(new PaintContext((Graphics2D) graphics));
-        System.currentTimeMillis();
+        long endTime = System.currentTimeMillis();
+        System.out.println(endTime - startTime);
     }
 
     public Camera getCamera() {

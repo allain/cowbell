@@ -4,7 +4,6 @@ import java.awt.Graphics2D;
 import ca.machete.cowbell.util.TransformStack;
 
 public class PaintContext {
-
     private final TransformStack transformStack;
 
     private final Graphics2D graphics;
@@ -12,6 +11,7 @@ public class PaintContext {
     public PaintContext(final Graphics2D graphics) {
         assert graphics != null;
         this.graphics = graphics;
+        
         this.transformStack = new TransformStack();
     }
 
