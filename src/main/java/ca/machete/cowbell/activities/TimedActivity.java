@@ -1,4 +1,4 @@
-package ca.machete.cowbell.activity;
+package ca.machete.cowbell.activities;
 
 public abstract class TimedActivity implements Activity {
 
@@ -15,6 +15,10 @@ public abstract class TimedActivity implements Activity {
         return startTime;
     }
 
+    public final long getDuration() {
+        return duration;
+    }
+
     @Override
     public void start() {
         step(0d);
@@ -26,8 +30,8 @@ public abstract class TimedActivity implements Activity {
 
     @Override
     public final boolean step(final long timeEllapsed) {
-        assert timeEllapsed <= duration;
-        assert timeEllapsed >= 0;
+        if (timeEllapsed < 0)
+            throw new IllegalArgumentException("Ellapsed time may not be negative");
 
         if (timeEllapsed >= duration)
             step(1d);
@@ -38,4 +42,5 @@ public abstract class TimedActivity implements Activity {
     }
 
     public abstract void step(double ratioCompleted);
+
 }

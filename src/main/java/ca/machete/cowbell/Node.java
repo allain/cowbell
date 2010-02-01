@@ -2,22 +2,16 @@ package ca.machete.cowbell;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
-import java.awt.geom.Rectangle2D.Double;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import ca.machete.cowbell.layouts.Layout;
 import ca.machete.cowbell.painters.Painter;
-import ca.machete.cowbell.util.NodeTransform;
 
 public class Node {
-    private static final java.awt.geom.Point2D.Double POINT2D_ORIGIN = new Point2D.Double(0,0);
-
-    private static final Point2D TMP_POINT = new Point2D.Double();
-    
-    private static final Rectangle2D TMP_RECTANGLE = new Rectangle2D.Double();
 
     /** Private singleton used in ALL nodes without children. */
     private static final List<Node> EMPTY_CHILDREN = Collections.<Node> emptyList();
@@ -44,7 +38,7 @@ public class Node {
     /** Arbitrary object that can be assigned to a node. */
     private Object model;
 
-    protected final NodeTransform transform;
+    protected final AffineTransform transform;
 
     private List<Node> children;
 
@@ -66,19 +60,21 @@ public class Node {
         invalidLayout = true;
 
         fullBounds = null;
-        transform = new NodeTransform();
+        transform = new AffineTransform();
         children = EMPTY_CHILDREN;
         painters = EMPTY_PAINTERS;
     }
 
     public final void addChild(final Node node) {
+        if (node == null)
+            throw new IllegalArgumentException("child may not be null");
+
         prepareNodeForChildren();
 
-        if (node.parent == this) {
+        if (node.parent == this)
             children.remove(node);
-        } else if (node.parent != null) {
+        else if (node.parent != null)
             node.parent.removeChild(node);
-        }
 
         children.add(node);
         node.parent = this;
@@ -130,30 +126,26 @@ public class Node {
      *            visibility
      * @return true if node would be visible if drawn
      */
-    private boolean isVisibleOnGraphics(Graphics2D graphics) {
+    private boolean isVisibleOnGraphics(final Graphics2D graphics) {
         return getFullBounds().intersects(graphics.getClip().getBounds2D());
     }
 
     public Rectangle2D getFullBounds() {
-        if (fullBounds == null) {
-            layout();
-            
-            fullBounds = collectChildrenBounds();
-            
-            fullBounds.add(transform.transform(POINT2D_ORIGIN, TMP_POINT));
-            fullBounds.add(transform.transform(new Point2D.Double(width, height), TMP_POINT));
-        }
+        if (fullBounds == null)
+            recomputeFullBounds();
 
         return fullBounds;
     }
 
-    private Rectangle2D collectChildrenBounds() {
-        final Rectangle2D fullBounds = new Rectangle2D.Double();
+    private void recomputeFullBounds() {
+        layout();
 
-        for (Node node : children)
-            fullBounds.add(transform.transform(node.getFullBounds(), TMP_RECTANGLE));
+        fullBounds = new Rectangle2D.Double(0, 0, width, height);
 
-        return fullBounds;
+        for (Node child : children)
+            fullBounds.add(child.getFullBounds());
+
+        fullBounds = transform(fullBounds);
     }
 
     public void layout() {
@@ -168,6 +160,9 @@ public class Node {
     }
 
     public void addPainter(final int index, final Painter painter) {
+        if (painter == null)
+            throw new IllegalArgumentException("You may not add a null painter");
+
         if (painters == EMPTY_PAINTERS)
             painters = new ArrayList<Painter>();
 
@@ -192,6 +187,9 @@ public class Node {
     }
 
     public void setLayout(final Layout layout) {
+        if (layout == null)
+            throw new IllegalArgumentException("Layout may not be null use Layout.Null instead");
+
         this.layout = layout;
     }
 
@@ -204,7 +202,7 @@ public class Node {
     }
 
     public void setTransform(final AffineTransform transform) {
-        this.transform.setTransform(transform);
+        this.transform.setTransform((AffineTransform) transform.clone());
 
         invalidateLayout();
     }
@@ -258,5 +256,39 @@ public class Node {
 
     public double getHeight() {
         return height;
+    }
+
+    public Iterable<Painter> getPainters() {
+        return Collections.unmodifiableCollection(painters);
+    }
+
+    public Rectangle2D transform(final Rectangle2D fullBounds) {
+        return transform(fullBounds, new Rectangle2D.Double());
+    }
+
+    private Rectangle2D transform(final Rectangle2D fullBounds, final Rectangle2D target) {
+        Point2D topLeft = new Point2D.Double(fullBounds.getMinX(), fullBounds.getMinY());
+        Point2D bottomRight = new Point2D.Double(fullBounds.getMaxX(), fullBounds.getMaxY());
+
+        transform.transform(topLeft, topLeft);
+        transform.transform(bottomRight, bottomRight);
+
+        target.setRect(topLeft.getX(), topLeft.getY(), bottomRight.getX() - topLeft.getX(), bottomRight.getY()
+                        - topLeft.getY());
+
+        return target;
+    }
+
+    public Point2D localToParent(final Point2D.Double point) {
+        try {
+            return transform.inverseTransform(point, null);
+        } catch (NoninvertibleTransformException e) {
+            return null;
+        }
+
+    }
+
+    public Point2D parentToLocal(final Point2D point) {
+        return transform.transform(point, null);
     }
 }

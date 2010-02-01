@@ -2,10 +2,12 @@ package ca.machete.cowbell;
 
 import java.awt.Graphics2D;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.NoninvertibleTransformException;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.List;
-import ca.machete.cowbell.activity.Activity;
-import ca.machete.cowbell.examples.CameraViewTransformActivity;
+import ca.machete.cowbell.activities.Activity;
+import ca.machete.cowbell.activities.CameraViewTransformActivity;
 import ca.machete.cowbell.painters.Painter;
 
 public class Camera extends Node {
@@ -46,7 +48,7 @@ public class Camera extends Node {
     }
 
     @Override
-    public final void paint(final PaintContext paintContext) {
+    public void paint(final PaintContext paintContext) {
         Graphics2D graphics = paintContext.getGraphics();
 
         paintContext.pushTransform();
@@ -60,7 +62,7 @@ public class Camera extends Node {
     }
 
     public AffineTransform getViewTransform() {
-        return viewTransform;
+        return (AffineTransform) viewTransform.clone();
     }
 
     public void addLayer(final Layer layer) {
@@ -91,5 +93,48 @@ public class Camera extends Node {
         Activity activity = new CameraViewTransformActivity(this, targetTransform, currentTime, duration);
 
         getRoot().getScheduler().schedule(activity);
+    }
+
+    public List<Node> getNodesAt(final Point2D parentPoint) {
+        List<Node> result = new ArrayList<Node>();
+
+        Point2D localPoint = transform.transform(parentPoint, null);
+        fetchChildrenAt(this, localPoint, result);
+
+        if (result.isEmpty())
+            try {
+                Point2D layerPoint = viewTransform.inverseTransform(parentPoint, null);
+
+                for (Layer layer : layers)
+                    if (layer.getFullBounds().contains(layerPoint))
+                        fetchNodesAt(layer, layerPoint, result);
+
+            } catch (NoninvertibleTransformException e) {
+                e.printStackTrace();
+            }
+
+        return result;
+    }
+
+    private void fetchNodesAt(final Node parent, final Point2D localPoint, final List<Node> result) {
+        boolean matchedChildren = false;
+
+        for (Node child : parent.getChildren())
+            if (child.getFullBounds().contains(localPoint)) {
+                Point2D childPoint = child.parentToLocal(localPoint);
+                fetchNodesAt(child, childPoint, result);
+                matchedChildren = true;
+            }
+
+        if (!matchedChildren)
+            result.add(parent);
+    }
+
+    private void fetchChildrenAt(final Node parent, final Point2D localPoint, final List<Node> result) {
+        for (Node child : parent.getChildren())
+            if (child.getFullBounds().contains(localPoint)) {
+                Point2D childPoint = child.parentToLocal(localPoint);
+                fetchNodesAt(child, childPoint, result);
+            }
     }
 }

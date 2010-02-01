@@ -1,4 +1,4 @@
-package ca.machete.cowbell.activity;
+package ca.machete.cowbell.activities;
 
 import java.awt.geom.AffineTransform;
 import ca.machete.cowbell.Node;

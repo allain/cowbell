@@ -1,4 +1,4 @@
-package ca.machete.cowbell.activity;
+package ca.machete.cowbell.activities;
 
 public interface Activity {
 

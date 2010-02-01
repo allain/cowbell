@@ -2,10 +2,10 @@ package ca.machete.cowbell;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
-import java.awt.event.ActionEvent;
-import java.awt.event.ActionListener;
+import java.awt.geom.Point2D;
+import java.util.List;
 import javax.swing.JComponent;
-import javax.swing.Timer;
+import ca.machete.cowbell.activities.InfiniteActivity;
 
 public class Canvas extends JComponent {
 
@@ -13,21 +13,23 @@ public class Canvas extends JComponent {
 
     private final Camera camera;
 
-    private final Timer masterTimer;
-
     public Canvas(final Camera camera) {
+        if (camera == null)
+            throw new IllegalArgumentException("camera provided to canvas is null");
+
+        if (camera.getRoot() == null)
+            throw new IllegalArgumentException("Attemptingto build Canvas using an unattached camera");
+
         this.camera = camera;
-        masterTimer = new Timer(50, new ActionListener() {
+        this.camera.getRoot().getScheduler().schedule(new InfiniteActivity() {
 
             @Override
-            public void actionPerformed(final ActionEvent e) {
-                camera.getRoot().getScheduler().tick();
-                Canvas.this.repaint();
+            public void step() {
+                repaint();
             }
 
         });
-        masterTimer.setRepeats(true);
-        masterTimer.start();
+
     }
 
     @Override
@@ -41,5 +43,9 @@ public class Canvas extends JComponent {
 
     public Camera getCamera() {
         return camera;
+    }
+
+    public List<Node> getNodesAt(final int x, final int y) {
+        return camera.getNodesAt(new Point2D.Double(x, y));
     }
 }

@@ -13,7 +13,7 @@ public class TransformStack {
     }
 
     public void push(final AffineTransform transform) {
-        if (transforms == null)
+        if (transform == null)
             throw new IllegalArgumentException("Null transform invalid on stack");
 
         transforms.add(transform);

@@ -4,14 +4,17 @@ import java.awt.Graphics2D;
 import ca.machete.cowbell.util.TransformStack;
 
 public class PaintContext {
+
     private final TransformStack transformStack;
 
     private final Graphics2D graphics;
 
     public PaintContext(final Graphics2D graphics) {
-        assert graphics != null;
+        if (graphics == null)
+            throw new IllegalArgumentException("graphics provided to PaintContext is null");
+
         this.graphics = graphics;
-        
+
         this.transformStack = new TransformStack();
     }
 
@@ -24,6 +27,9 @@ public class PaintContext {
     }
 
     public void popTransform() {
-        graphics.setTransform(transformStack.peek());
+        if (transformStack.peek() == null)
+            throw new UnsupportedOperationException("Transform stack is empty");
+
+        graphics.setTransform(transformStack.pop());
     }
 }

@@ -11,7 +11,7 @@ public class BorderPainter implements Painter {
     public void paint(final Node node, final PaintContext paintContext) {
         Graphics2D g = paintContext.getGraphics();
         g.setPaint(Color.BLACK);
-        g.drawRect(0, 0, (int) node.getWidth(), (int) node.getHeight());
+        g.drawRect(0, 0, (int) node.getWidth() - 1, (int) node.getHeight() - 1);
     }
 
 }

@@ -1,4 +1,4 @@
-package ca.machete.cowbell.activity;
+package ca.machete.cowbell.activities;
 
 public abstract class InfiniteActivity implements Activity {
 

@@ -1,8 +1,7 @@
-package ca.machete.cowbell.examples;
+package ca.machete.cowbell.activities;
 
 import java.awt.geom.AffineTransform;
 import ca.machete.cowbell.Camera;
-import ca.machete.cowbell.activity.TimedActivity;
 
 public class CameraViewTransformActivity extends TimedActivity {
 
