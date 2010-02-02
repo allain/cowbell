@@ -58,11 +58,19 @@ public class RootTest {
 
     private Root buildTestRoot() {
         Root root = new Root();
+        
         root.addChild(new Camera());
         root.addChild(new Layer());
         root.addChild(new Camera());
         root.addChild(new Layer());
         root.addChild(new Layer());
+        
         return root;
+    }
+    
+    @Test
+    public void rootHasMouseEventDispatcher() {
+        Root root = new Root();
+        assertNotNull(root.getMouseEventDispatcher());
     }
 }

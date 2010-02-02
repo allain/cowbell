@@ -389,4 +389,16 @@ public class NodeTest {
         Point2D localPoint = node.parentToLocal(new Point2D.Double(1, 1));
         assertEquals(new Point2D.Double(2, 2), localPoint);
     }
+    
+    @Test
+    public void parentPersists() {
+        Node child = new Node();
+        Node parent = new Node();
+        
+        parent.addChild(child);
+        assertSame(parent, child.getParent());
+        
+        parent.removeChild(child);
+        assertNull(child.getParent());
+    }
 }

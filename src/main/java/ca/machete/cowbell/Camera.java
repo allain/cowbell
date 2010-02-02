@@ -110,7 +110,7 @@ public class Camera extends Node {
                         fetchNodesAt(layer, layerPoint, result);
 
             } catch (NoninvertibleTransformException e) {
-                e.printStackTrace();
+                throw new UnsupportedOperationException(e);
             }
 
         return result;
@@ -136,5 +136,13 @@ public class Camera extends Node {
                 Point2D childPoint = child.parentToLocal(localPoint);
                 fetchNodesAt(child, childPoint, result);
             }
+    }
+
+    public Point2D viewToGlobal(Point2D viewPoint) {
+        try {
+            return viewTransform.inverseTransform(viewPoint, null);
+        } catch (NoninvertibleTransformException e) {
+            return null;
+        }
     }
 }

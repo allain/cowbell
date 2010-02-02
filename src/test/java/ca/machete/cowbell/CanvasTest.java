@@ -1,6 +1,7 @@
 package ca.machete.cowbell;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import java.awt.Dimension;
 import java.awt.Graphics2D;
@@ -110,13 +111,23 @@ public class CanvasTest {
     }
 
     @Test
-    public void nodesAtReturnsCameraAndLayerEvenWhenSceneIsEmpty() {
+    public void nodesAtReturnsLayerEvenWhenSceneIsEmpty() {
         Layer layer = canvas.getCamera().getLayer(0);
         layer.setSize(100, 100);
 
         List<Node> coveredNodes = canvas.getNodesAt(0, 0);
         assertEquals(1, coveredNodes.size());
         assertEquals(layer, coveredNodes.get(0));
+    }
+    
+    @Test(expected = UnsupportedOperationException.class)
+    public void nodesAtThrowsExceptionWhenViewTransformIsNonInvertible() {
+        Layer layer = canvas.getCamera().getLayer(0);
+        layer.setSize(100, 100);
+
+        canvas.getCamera().setViewTransform(0, 0, 0, 0, 0, 0);
+        List<Node> coveredNodes = canvas.getNodesAt(0, 0);
+        assertNull(coveredNodes);
     }
 
     @Test

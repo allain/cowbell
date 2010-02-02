@@ -94,6 +94,10 @@ public class Node {
             children = EMPTY_CHILDREN;
             removePainter(CHILD_PAINTER);
         }
+        
+        if (node.parent != null) {
+            node.parent = null;
+        }
 
         return removed;
     }
@@ -290,5 +294,9 @@ public class Node {
 
     public Point2D parentToLocal(final Point2D point) {
         return transform.transform(point, null);
+    }
+
+    public Node getParent() {
+        return parent;
     }
 }

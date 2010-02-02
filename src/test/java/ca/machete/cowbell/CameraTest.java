@@ -4,9 +4,11 @@ import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNotNull;
 import static org.junit.Assert.assertNotSame;
+import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import static org.junit.Assert.assertTrue;
 import java.awt.geom.AffineTransform;
+import java.awt.geom.Point2D;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
@@ -115,6 +117,16 @@ public class CameraTest {
         assertTrue(activityIterator.hasNext());
         assertNotNull(activityIterator.next());
         assertFalse(activityIterator.hasNext());
-
+    }
+    
+    @Test
+    public void viewToGlobalReturnsNullWhenTransformIsNonInvertible() {
+        Root root = new Root();
+        Camera camera = new Camera();
+        root.addChild(camera);
+        camera.setViewTransform(0, 0, 0, 0, 0, 0);
+        assertNull(camera.viewToGlobal(new Point2D.Double(5, 5)));
     }
 }
+
+    
