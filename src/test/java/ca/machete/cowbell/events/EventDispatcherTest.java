@@ -63,7 +63,7 @@ public class EventDispatcherTest {
         dispatcher.register(filter, new EventListener<Object>() {
 
             @Override
-            public void dispatch(Object object) {
+            public void dispatch(final Object object) {
                 throw new UnsupportedOperationException();
             }
 
@@ -74,16 +74,15 @@ public class EventDispatcherTest {
         try {
             dispatcher.dispatch(null);
             fail("Exception not thrown");
-        } catch (DispatcherException e) {
-        }
-        
+        } catch (DispatcherException e) {}
+
         assertEquals(1, callCounter.getCallCount());
     }
 
     private final class AcceptAllEventFilter implements EventFilter<Object> {
 
         @Override
-        public boolean test(Object object) {
+        public boolean test(final Object object) {
             return true;
         }
     }
@@ -91,7 +90,7 @@ public class EventDispatcherTest {
     private final class AcceptNoneEventFilter implements EventFilter<Object> {
 
         @Override
-        public boolean test(Object object) {
+        public boolean test(final Object object) {
             return false;
         }
     }
@@ -105,7 +104,7 @@ public class EventDispatcherTest {
         }
 
         @Override
-        public void dispatch(Object object) {
+        public void dispatch(final Object object) {
             callCount++;
         }
     }

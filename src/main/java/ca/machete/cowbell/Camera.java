@@ -41,8 +41,9 @@ public class Camera extends Node {
 
         graphics.transform(viewTransform);
 
-        for (Layer layer : layers)
+        for (Layer layer : layers) {
             layer.paint(paintContext);
+        }
 
         paintContext.popTransform();
     }
@@ -55,8 +56,9 @@ public class Camera extends Node {
 
         graphics.transform(transform);
 
-        for (Painter painter : painters)
+        for (Painter painter : painters) {
             painter.paint(this, paintContext);
+        }
 
         paintContext.popTransform();
     }
@@ -101,17 +103,19 @@ public class Camera extends Node {
         Point2D localPoint = transform.transform(parentPoint, null);
         fetchChildrenAt(this, localPoint, result);
 
-        if (result.isEmpty())
+        if (result.isEmpty()) {
             try {
                 Point2D layerPoint = viewTransform.inverseTransform(parentPoint, null);
 
                 for (Layer layer : layers)
-                    if (layer.getFullBounds().contains(layerPoint))
+                    if (layer.getFullBounds().contains(layerPoint)) {
                         fetchNodesAt(layer, layerPoint, result);
+                    }
 
             } catch (NoninvertibleTransformException e) {
                 throw new UnsupportedOperationException(e);
             }
+        }
 
         return result;
     }
@@ -126,8 +130,9 @@ public class Camera extends Node {
                 matchedChildren = true;
             }
 
-        if (!matchedChildren)
+        if (!matchedChildren) {
             result.add(parent);
+        }
     }
 
     private void fetchChildrenAt(final Node parent, final Point2D localPoint, final List<Node> result) {
@@ -138,7 +143,7 @@ public class Camera extends Node {
             }
     }
 
-    public Point2D viewToGlobal(Point2D viewPoint) {
+    public Point2D viewToGlobal(final Point2D viewPoint) {
         try {
             return viewTransform.inverseTransform(viewPoint, null);
         } catch (NoninvertibleTransformException e) {

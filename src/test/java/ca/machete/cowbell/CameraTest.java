@@ -118,7 +118,7 @@ public class CameraTest {
         assertNotNull(activityIterator.next());
         assertFalse(activityIterator.hasNext());
     }
-    
+
     @Test
     public void viewToGlobalReturnsNullWhenTransformIsNonInvertible() {
         Root root = new Root();
@@ -128,5 +128,3 @@ public class CameraTest {
         assertNull(camera.viewToGlobal(new Point2D.Double(5, 5)));
     }
 }
-
-    

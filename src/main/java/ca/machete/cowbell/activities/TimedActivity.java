@@ -33,10 +33,11 @@ public abstract class TimedActivity implements Activity {
         if (timeEllapsed < 0)
             throw new IllegalArgumentException("Ellapsed time may not be negative");
 
-        if (timeEllapsed >= duration)
+        if (timeEllapsed >= duration) {
             step(1d);
-        else
+        } else {
             step(timeEllapsed / (duration * 1d));
+        }
 
         return timeEllapsed < duration;
     }

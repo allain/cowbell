@@ -8,16 +8,19 @@ import ca.machete.cowbell.Node;
 import ca.machete.cowbell.Root;
 import ca.machete.cowbell.events.IMouseEvent;
 
-
 public class MockIMouseEvent implements IMouseEvent {
 
-    private Type type;
-    private List<Node> coveredNodes;
-    private int x;
-    private int y;
-    private Canvas canvas;
+    private final Type type;
 
-    public MockIMouseEvent(Type type, List<Node> nodes, int x, int y) {
+    private final List<Node> coveredNodes;
+
+    private final int x;
+
+    private final int y;
+
+    private final Canvas canvas;
+
+    public MockIMouseEvent(final Type type, final List<Node> nodes, final int x, final int y) {
         this.type = type;
         this.coveredNodes = nodes;
         this.x = x;

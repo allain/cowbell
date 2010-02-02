@@ -179,8 +179,9 @@ public class NodeTest {
         double[] actualMatrix = new double[6];
         node.getTransform().getMatrix(actualMatrix);
 
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 6; i++) {
             assertEquals(matrix[i], actualMatrix[i], 0.001);
+        }
     }
 
     @Test
@@ -389,15 +390,15 @@ public class NodeTest {
         Point2D localPoint = node.parentToLocal(new Point2D.Double(1, 1));
         assertEquals(new Point2D.Double(2, 2), localPoint);
     }
-    
+
     @Test
     public void parentPersists() {
         Node child = new Node();
         Node parent = new Node();
-        
+
         parent.addChild(child);
         assertSame(parent, child.getParent());
-        
+
         parent.removeChild(child);
         assertNull(child.getParent());
     }

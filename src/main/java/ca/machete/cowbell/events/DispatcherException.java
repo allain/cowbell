@@ -12,7 +12,7 @@ public class DispatcherException extends RuntimeException {
     public DispatcherException(final Collection<Exception> thrownExceptions) {
         this.thrownExceptions = Collections.unmodifiableCollection(thrownExceptions);
     }
-    
+
     public Collection<Exception> getThrownExceptions() {
         return thrownExceptions;
     }

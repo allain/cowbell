@@ -24,8 +24,9 @@ public class Node {
 
         @Override
         public void paint(final Node node, final PaintContext paintContext) {
-            for (Node child : node.children)
+            for (Node child : node.children) {
                 child.paint(paintContext);
+            }
         }
     };
 
@@ -71,10 +72,11 @@ public class Node {
 
         prepareNodeForChildren();
 
-        if (node.parent == this)
+        if (node.parent == this) {
             children.remove(node);
-        else if (node.parent != null)
+        } else if (node.parent != null) {
             node.parent.removeChild(node);
+        }
 
         children.add(node);
         node.parent = this;
@@ -94,7 +96,7 @@ public class Node {
             children = EMPTY_CHILDREN;
             removePainter(CHILD_PAINTER);
         }
-        
+
         if (node.parent != null) {
             node.parent = null;
         }
@@ -116,8 +118,9 @@ public class Node {
 
         graphics.transform(transform);
 
-        for (Painter painter : painters)
+        for (Painter painter : painters) {
             painter.paint(this, paintContext);
+        }
 
         paintContext.popTransform();
     }
@@ -135,8 +138,9 @@ public class Node {
     }
 
     public Rectangle2D getFullBounds() {
-        if (fullBounds == null)
+        if (fullBounds == null) {
             recomputeFullBounds();
+        }
 
         return fullBounds;
     }
@@ -146,16 +150,18 @@ public class Node {
 
         fullBounds = new Rectangle2D.Double(0, 0, width, height);
 
-        for (Node child : children)
+        for (Node child : children) {
             fullBounds.add(child.getFullBounds());
+        }
 
         fullBounds = transform(fullBounds);
     }
 
     public void layout() {
         if (invalidLayout) {
-            for (Node node : children)
+            for (Node node : children) {
                 node.layout();
+            }
 
             layout.layout(children, width, height);
 
@@ -167,8 +173,9 @@ public class Node {
         if (painter == null)
             throw new IllegalArgumentException("You may not add a null painter");
 
-        if (painters == EMPTY_PAINTERS)
+        if (painters == EMPTY_PAINTERS) {
             painters = new ArrayList<Painter>();
+        }
 
         painters.add(index, painter);
     }
@@ -180,8 +187,9 @@ public class Node {
     public boolean removePainter(final Painter painter) {
         boolean removed = painters.remove(painter);
 
-        if (painters.isEmpty())
+        if (painters.isEmpty()) {
             painters = EMPTY_PAINTERS;
+        }
 
         return removed;
     }
@@ -229,8 +237,9 @@ public class Node {
         if (invalidLayout == false) {
             invalidLayout = true;
             fullBounds = null;
-            if (parent != null)
+            if (parent != null) {
                 parent.invalidateLayout();
+            }
         }
     }
 

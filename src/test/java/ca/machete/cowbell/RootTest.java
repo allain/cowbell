@@ -33,8 +33,9 @@ public class RootTest {
         Root root = buildTestRoot();
 
         Iterator<Layer> layers = root.getLayers().iterator();
-        for (int i = 0; i < 3; i++)
+        for (int i = 0; i < 3; i++) {
             assertNotNull(layers.next());
+        }
 
         assertFalse(layers.hasNext());
     }
@@ -44,8 +45,9 @@ public class RootTest {
         Root root = buildTestRoot();
 
         Iterator<Camera> cameras = root.getCameras().iterator();
-        for (int i = 0; i < 2; i++)
+        for (int i = 0; i < 2; i++) {
             assertNotNull(cameras.next());
+        }
 
         assertFalse(cameras.hasNext());
     }
@@ -58,16 +60,16 @@ public class RootTest {
 
     private Root buildTestRoot() {
         Root root = new Root();
-        
+
         root.addChild(new Camera());
         root.addChild(new Layer());
         root.addChild(new Camera());
         root.addChild(new Layer());
         root.addChild(new Layer());
-        
+
         return root;
     }
-    
+
     @Test
     public void rootHasMouseEventDispatcher() {
         Root root = new Root();

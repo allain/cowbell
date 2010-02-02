@@ -27,8 +27,9 @@ public class NodeTransformActivity extends TimedActivity {
     @Override
     public void step(final double ratioCompleted) {
         double[] currentMatrix = new double[6];
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 6; i++) {
             currentMatrix[i] = (targetMatrix[i] - startMatrix[i]) * ratioCompleted + startMatrix[i];
+        }
 
         node.setTransform(currentMatrix);
     }

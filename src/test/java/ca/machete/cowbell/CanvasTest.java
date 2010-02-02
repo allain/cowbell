@@ -119,7 +119,7 @@ public class CanvasTest {
         assertEquals(1, coveredNodes.size());
         assertEquals(layer, coveredNodes.get(0));
     }
-    
+
     @Test(expected = UnsupportedOperationException.class)
     public void nodesAtThrowsExceptionWhenViewTransformIsNonInvertible() {
         Layer layer = canvas.getCamera().getLayer(0);
