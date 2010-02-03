@@ -69,10 +69,4 @@ public class RootTest {
 
         return root;
     }
-
-    @Test
-    public void rootHasMouseEventDispatcher() {
-        Root root = new Root();
-        assertNotNull(root.getMouseEventDispatcher());
-    }
 }

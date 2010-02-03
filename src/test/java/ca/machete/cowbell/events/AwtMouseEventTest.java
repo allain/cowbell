@@ -5,8 +5,6 @@ import static org.junit.Assert.assertSame;
 import java.awt.event.InputEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Point2D;
-import java.util.ArrayList;
-import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
 import ca.machete.cowbell.Camera;
@@ -18,8 +16,6 @@ import ca.machete.cowbell.Root;
 public class AwtMouseEventTest {
 
     private Canvas canvas;
-
-    private List<Node> emptyNodes;
 
     @Before
     public void setupCanvas() {
@@ -34,36 +30,37 @@ public class AwtMouseEventTest {
         camera.addLayer(layer);
 
         this.canvas = new Canvas(camera);
-
-        this.emptyNodes = new ArrayList<Node>();
     }
 
     @Test
     public void eventTypeExtractsFromAwtMouseEventProperly() {
-        IMouseEvent event = new AwtMouseEvent(new LeftClick(0, 0), emptyNodes);
-        assertSame(IMouseEvent.Type.Clicked, event.getType());
+        IMouseEvent event = new AwtMouseEvent(new LeftClick(0, 0));
+        assertSame(IMouseEvent.Type.Click, event.getType());
     }
 
     @Test
     public void canvasIsAvailableThroughMouseEvent() {
         LeftClick leftClick = new LeftClick(0, 0);
-        IMouseEvent event = new AwtMouseEvent(leftClick, emptyNodes);
+        IMouseEvent event = new AwtMouseEvent(leftClick);
         assertSame(canvas, event.getCanvas());
     }
 
     @Test
-    public void coveredNodesArePassedThrough() {
+    public void coveredNodesAreExtractedProperly() {
         LeftClick leftClick = new LeftClick(0, 0);
-        List<Node> coveredNodes = new ArrayList<Node>();
-        coveredNodes.add(new Node());
-        IMouseEvent event = new AwtMouseEvent(leftClick, coveredNodes);
-        assertSame(coveredNodes, event.getCoveredNodes());
+        Node node = new Node();
+        node.setSize(10, 10);
+        canvas.getCamera().getLayer(0).addChild(node);
+        
+        IMouseEvent event = new AwtMouseEvent(leftClick);
+        assertEquals(1, event.getCoveredNodes().size());
+        assertSame(node, event.getCoveredNodes().get(0));
     }
 
     @Test(expected = IllegalArgumentException.class)
     public void exceptionThrownOnUnsupportedType() {
         new AwtMouseEvent(new MouseEvent(canvas, 0, System.currentTimeMillis(), InputEvent.BUTTON1_MASK, 0, 0, 1,
-                        false, MouseEvent.BUTTON1), emptyNodes);
+                        false, MouseEvent.BUTTON1));
     }
 
     @Test
@@ -71,7 +68,7 @@ public class AwtMouseEventTest {
         LeftClick leftClick = new LeftClick(0, 0);
         canvas.getCamera().setViewTransform(1, 0, 0, 1, -20, -20);
 
-        IMouseEvent event = new AwtMouseEvent(leftClick, emptyNodes);
+        IMouseEvent event = new AwtMouseEvent(leftClick);
 
         Point2D globalPoint = event.getGlobalPoint();
         assertEquals(new Point2D.Double(20, 20), globalPoint);

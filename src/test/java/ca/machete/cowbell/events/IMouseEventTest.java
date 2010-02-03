@@ -7,6 +7,6 @@ public class IMouseEventTest {
 
     @Test
     public void mapsTypeNamesToTypesProperly() {
-        assertSame(IMouseEvent.Type.Clicked, IMouseEvent.Type.valueOf("Clicked"));
+        assertSame(IMouseEvent.Type.Click, IMouseEvent.Type.valueOf("Click"));
     }
 }

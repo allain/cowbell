@@ -6,6 +6,7 @@ import java.awt.geom.Point2D;
 import java.util.List;
 import javax.swing.JComponent;
 import ca.machete.cowbell.activities.InfiniteActivity;
+import ca.machete.cowbell.events.CanvasInputListener;
 
 public class Canvas extends JComponent {
 
@@ -30,6 +31,12 @@ public class Canvas extends JComponent {
 
         });
 
+        installListeners();
+    }
+
+    private final void installListeners() {
+        CanvasInputListener listener = new CanvasInputListener();
+        addMouseListener(listener);
     }
 
     @Override

@@ -35,7 +35,7 @@ public class CameraViewTransformActivityTest {
     }
 
     @Test
-    public void OneRatioEquatesToTarget() {
+    public void oneRatioEquatesToTarget() {
         CameraViewTransformActivity activity = new CameraViewTransformActivity(camera, AffineTransform
                         .getScaleInstance(5, 5), System.currentTimeMillis(), 1000);
         activity.start();

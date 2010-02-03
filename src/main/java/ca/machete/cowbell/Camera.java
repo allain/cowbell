@@ -101,19 +101,15 @@ public class Camera extends Node {
         List<Node> result = new ArrayList<Node>();
 
         Point2D localPoint = transform.transform(parentPoint, null);
-        fetchChildrenAt(this, localPoint, result);
+        fetchDescendantsAt(this, localPoint, result);
 
         if (result.isEmpty()) {
-            try {
-                Point2D layerPoint = viewTransform.inverseTransform(parentPoint, null);
+            Point2D layerPoint = viewToGlobal(parentPoint);
 
-                for (Layer layer : layers)
-                    if (layer.getFullBounds().contains(layerPoint)) {
-                        fetchNodesAt(layer, layerPoint, result);
-                    }
-
-            } catch (NoninvertibleTransformException e) {
-                throw new UnsupportedOperationException(e);
+            for (Layer layer : layers) {
+                if (layer.getFullBounds().contains(layerPoint)) {
+                    fetchNodesAt(layer, layerPoint, result);
+                }
             }
         }
 
@@ -121,26 +117,22 @@ public class Camera extends Node {
     }
 
     private void fetchNodesAt(final Node parent, final Point2D localPoint, final List<Node> result) {
-        boolean matchedChildren = false;
-
-        for (Node child : parent.getChildren())
-            if (child.getFullBounds().contains(localPoint)) {
-                Point2D childPoint = child.parentToLocal(localPoint);
-                fetchNodesAt(child, childPoint, result);
-                matchedChildren = true;
-            }
-
-        if (!matchedChildren) {
+        if (!fetchDescendantsAt(parent, localPoint, result)) {
             result.add(parent);
         }
     }
 
-    private void fetchChildrenAt(final Node parent, final Point2D localPoint, final List<Node> result) {
-        for (Node child : parent.getChildren())
+    private boolean fetchDescendantsAt(final Node parent, final Point2D localPoint, final List<Node> result) {
+        final int startSize = result.size();
+
+        for (Node child : parent.getChildren()) {
             if (child.getFullBounds().contains(localPoint)) {
                 Point2D childPoint = child.parentToLocal(localPoint);
                 fetchNodesAt(child, childPoint, result);
             }
+        }
+
+        return result.size() != startSize;
     }
 
     public Point2D viewToGlobal(final Point2D viewPoint) {

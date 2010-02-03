@@ -54,7 +54,7 @@ public class SchedulerTest {
         assertFalse(scheduler.getActiveActivities().contains(activity));
     }
 
-    private final class InstantenousMockActivity implements Activity {
+    private final static class InstantenousMockActivity implements Activity {
 
         @Override
         public long getStartTime() {

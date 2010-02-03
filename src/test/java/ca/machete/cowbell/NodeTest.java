@@ -12,24 +12,33 @@ import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import ca.machete.cowbell.events.IMouseEvent;
+import ca.machete.cowbell.events.MockIMouseEvent;
+import ca.machete.cowbell.events.MouseAdapter;
 import ca.machete.cowbell.layouts.Layout;
 import ca.machete.cowbell.painters.Painter;
 
 public class NodeTest {
 
     private Painter mockPainter;
+    private MockMouseListener mockListener;
 
     @Before
     public void buildMockPainter() {
         mockPainter = new Painter() {
-
             public void paint(final Node node, final PaintContext paintContext) {
             }
         };
+    }
+    
+    @Before
+    public void buildMockMouseListener() {
+        mockListener = new MockMouseListener();
     }
 
     @Test
@@ -401,5 +410,46 @@ public class NodeTest {
 
         parent.removeChild(child);
         assertNull(child.getParent());
+    }
+
+    @Test
+    public void registratinOfMouseListenerDoesSo() {
+        Node node = new Node();
+        
+        node.addMouseListener(mockListener);
+        
+        IMouseEvent mouseEvent = new MockIMouseEvent(IMouseEvent.Type.Click, Collections.<Node>emptyList(), 0, 0);
+        node.getMouseListenerDispatcher().mouseClicked(mouseEvent);
+        assertEquals(1, mockListener.getClickCount());
+    }
+    
+    @Test
+    public void removeMouseListenerDoesNothingWhenListenerIsMissing() {
+        Node node = new Node();
+        MouseAdapter missingAdapter = new MouseAdapter();
+        node.addMouseListener(new MouseAdapter());
+        node.removeMouseListener(missingAdapter);
+    }
+    
+    @Test
+    public void removingListenerWorks() {
+        Node node = new Node();
+        MouseAdapter listener = new MouseAdapter();
+        node.addMouseListener(listener);
+        node.removeMouseListener(listener);
+        node.getMouseListenerDispatcher().mouseClicked(null);
+    }
+    
+    private static class MockMouseListener extends MouseAdapter {
+        private int clickCount;
+
+        @Override
+        public void mouseClicked(IMouseEvent mouseEvent) {
+            clickCount ++;
+        }
+        
+        public int getClickCount() {
+            return clickCount;
+        }
     }
 }

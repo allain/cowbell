@@ -8,6 +8,9 @@ import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import ca.machete.cowbell.events.IMouseListener;
+import ca.machete.cowbell.events.MouseAdapter;
+import ca.machete.cowbell.events.MouseListenerDispatcher;
 import ca.machete.cowbell.layouts.Layout;
 import ca.machete.cowbell.painters.Painter;
 
@@ -50,6 +53,8 @@ public class Node {
     private double height;
 
     private Rectangle2D fullBounds;
+
+    private MouseListenerDispatcher mouseEventDispatcher;
 
     public Node() {
         this(Layout.Null);
@@ -307,5 +312,30 @@ public class Node {
 
     public Node getParent() {
         return parent;
+    }
+
+    public void addMouseListener(final IMouseListener listener) {
+        if (mouseEventDispatcher == null) {
+            mouseEventDispatcher = new MouseListenerDispatcher();
+        }
+
+        mouseEventDispatcher.addListener(listener);
+    }
+
+    public void removeMouseListener(final MouseAdapter mouseAdapter) {
+        if (mouseEventDispatcher != null) {
+            mouseEventDispatcher.removeListener(mouseAdapter);
+
+            if (!mouseEventDispatcher.hasListeners()) {
+                mouseEventDispatcher = null;
+            }
+        }
+    }
+
+    public IMouseListener getMouseListenerDispatcher() {
+        if (mouseEventDispatcher == null)
+            return IMouseListener.Null;
+
+        return mouseEventDispatcher;
     }
 }

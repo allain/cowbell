@@ -16,17 +16,27 @@ public class AwtMouseEvent implements IMouseEvent {
 
     private final List<Node> coveredNodes;
 
-    public AwtMouseEvent(final java.awt.event.MouseEvent awtEvent, final List<Node> coveredNodes) {
-        if ((awtEvent.getID() == MouseEvent.MOUSE_CLICKED)) {
-            type = Type.Clicked;
-        } else
-            throw new IllegalArgumentException("MouseEvent is of unrecognized typed.");
+    public AwtMouseEvent(final java.awt.event.MouseEvent awtEvent) {
+        type = extractTypeFromEvent(awtEvent);
 
         canvas = (Canvas) awtEvent.getComponent();
 
         globalPoint = canvas.getCamera().viewToGlobal(new Point2D.Double(awtEvent.getX(), awtEvent.getY()));
 
-        this.coveredNodes = coveredNodes;
+        this.coveredNodes = canvas.getNodesAt(awtEvent.getX(), awtEvent.getY());
+    }
+
+    private final Type extractTypeFromEvent(final java.awt.event.MouseEvent awtEvent) {
+        switch (awtEvent.getID()) {
+            case MouseEvent.MOUSE_CLICKED:
+                return Type.Click;
+            case MouseEvent.MOUSE_PRESSED:
+                return Type.Press;
+            case MouseEvent.MOUSE_RELEASED:
+                return Type.Release;
+            default:
+                throw new IllegalArgumentException("MouseEvent is of unrecognized typed.");
+        }
     }
 
     @Override
