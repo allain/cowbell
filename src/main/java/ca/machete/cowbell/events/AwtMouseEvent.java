@@ -34,6 +34,10 @@ public class AwtMouseEvent implements IMouseEvent {
                 return Type.Press;
             case MouseEvent.MOUSE_RELEASED:
                 return Type.Release;
+            case MouseEvent.MOUSE_MOVED:
+                return Type.Move;
+            case MouseEvent.MOUSE_DRAGGED:
+                return Type.Move;
             default:
                 throw new IllegalArgumentException("MouseEvent is of unrecognized typed.");
         }

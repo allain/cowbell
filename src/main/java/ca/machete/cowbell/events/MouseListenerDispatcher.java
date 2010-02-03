@@ -22,4 +22,11 @@ public class MouseListenerDispatcher extends AbstractDispatcher<IMouseListener> 
             listener.mouseReleased(mouseEvent);
         }
     }
+
+    @Override
+    public void mouseMoved(IMouseEvent mouseEvent) {
+        for (IMouseListener listener : getListeners()) {
+            listener.mouseMoved(mouseEvent);
+        }
+    }
 }

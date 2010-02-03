@@ -8,7 +8,7 @@ import ca.machete.cowbell.Node;
 public interface IMouseEvent {
 
     enum Type {
-        Click, Press, Release
+        Click, Press, Release, Move
     }
 
     Type getType();

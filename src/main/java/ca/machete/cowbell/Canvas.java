@@ -37,6 +37,7 @@ public class Canvas extends JComponent {
     private final void installListeners() {
         CanvasInputListener listener = new CanvasInputListener();
         addMouseListener(listener);
+        addMouseMotionListener(listener);
     }
 
     @Override

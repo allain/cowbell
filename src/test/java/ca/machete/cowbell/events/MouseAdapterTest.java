@@ -11,5 +11,6 @@ public class MouseAdapterTest {
         adapter.mouseClicked(null);
         adapter.mouseReleased(null);
         adapter.mousePressed(null);
+        adapter.mouseMoved(null);
     }
 }

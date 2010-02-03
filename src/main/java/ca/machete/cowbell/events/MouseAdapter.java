@@ -15,4 +15,8 @@ public class MouseAdapter implements IMouseListener {
     public void mouseReleased(IMouseEvent mouseEvent) {
     }
 
+    @Override
+    public void mouseMoved(IMouseEvent mouseEvent) {
+    }
+
 }

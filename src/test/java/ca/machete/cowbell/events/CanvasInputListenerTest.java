@@ -37,7 +37,7 @@ public class CanvasInputListenerTest {
 
     @Test
     public void mouseClickedDispatchesToHierarchy() {
-        LeftClick leftClick = new LeftClick(0, 0);
+        MouseEvent leftClick = new SimpleMouseEvent(MouseEvent.MOUSE_CLICKED, 0, 0);
         final int clickCount[] = new int[1];
 
         IMouseListener countingListener = new MouseAdapter() {
@@ -73,14 +73,13 @@ public class CanvasInputListenerTest {
         layer.addMouseListener(countingListener);
         layer.setSize(100, 100);
 
-        listener.mousePressed(new LeftPress(0, 0));
+        listener.mousePressed(new SimpleMouseEvent(MouseEvent.MOUSE_PRESSED, 0, 0));
         
         assertEquals(2, pressCount[0]);
     }
 
     @Test
     public void mouseReleasedDispatchesToHierarchy() {
-        LeftRelease leftRelease = new LeftRelease(0, 0);
         final int releaseCount[] = new int[1];
 
         IMouseListener countingListener = new MouseAdapter() {
@@ -95,36 +94,57 @@ public class CanvasInputListenerTest {
         layer.addMouseListener(countingListener);
         layer.setSize(100, 100);
 
-        listener.mouseReleased(leftRelease);
+        listener.mouseReleased(new SimpleMouseEvent(MouseEvent.MOUSE_RELEASED, 0, 0));
+        
+        assertEquals(2, releaseCount[0]);
+    }
+    
+    @Test
+    public void mouseMovedDispatchesToHierarchy() {
+        final int releaseCount[] = new int[1];
+
+        IMouseListener countingListener = new MouseAdapter() {
+
+            @Override
+            public void mouseMoved(IMouseEvent mouseEvent) {
+                releaseCount[0]++;
+            }
+        };
+
+        root.addMouseListener(countingListener);
+        layer.addMouseListener(countingListener);
+        layer.setSize(100, 100);
+
+        listener.mouseMoved(new SimpleMouseEvent(MouseEvent.MOUSE_MOVED, 0, 0));
         
         assertEquals(2, releaseCount[0]);
     }
 
     
-    @SuppressWarnings("serial")
-    private class LeftClick extends MouseEvent {
+    @Test
+    public void mouseDraggedDispatchesToHierarchy() {
+        final int releaseCount[] = new int[1];
 
-        LeftClick(final int x, final int y) {
-            super(canvas, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), InputEvent.BUTTON1_MASK, x, y, 1,
-                            false, MouseEvent.BUTTON1);
-        }
+        IMouseListener countingListener = new MouseAdapter() {
+
+            @Override
+            public void mouseMoved(IMouseEvent mouseEvent) {
+                releaseCount[0]++;
+            }
+        };
+
+        root.addMouseListener(countingListener);
+        layer.addMouseListener(countingListener);
+        layer.setSize(100, 100);
+
+        listener.mouseDragged(new SimpleMouseEvent(MouseEvent.MOUSE_DRAGGED, 0, 0));
+        
+        assertEquals(2, releaseCount[0]);
     }
-    
-    @SuppressWarnings("serial")
-    private class LeftPress extends MouseEvent {
 
-        LeftPress(final int x, final int y) {
-            super(canvas, MouseEvent.MOUSE_PRESSED, System.currentTimeMillis(), InputEvent.BUTTON1_MASK, x, y, 1,
-                            false, MouseEvent.BUTTON1);
-        }
-    }
-    
-    @SuppressWarnings("serial")
-    private class LeftRelease extends MouseEvent {
-
-        LeftRelease(final int x, final int y) {
-            super(canvas, MouseEvent.MOUSE_RELEASED, System.currentTimeMillis(), InputEvent.BUTTON1_MASK, x, y, 1,
-                            false, MouseEvent.BUTTON1);
+    private class SimpleMouseEvent extends MouseEvent {
+        public SimpleMouseEvent(int type, int x, int y) {
+            super(canvas, type, System.currentTimeMillis(), InputEvent.BUTTON1_MASK, x,y, 1, false, MouseEvent.BUTTON1);
         }
     }
 }

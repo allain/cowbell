@@ -34,25 +34,31 @@ public class AwtMouseEventTest {
 
     @Test
     public void eventTypeExtractsFromAwtMouseEventProperly() {
-        IMouseEvent event = new AwtMouseEvent(new LeftClick(0, 0));
-        assertSame(IMouseEvent.Type.Click, event.getType());
+        assertEventTypesCorrelate(IMouseEvent.Type.Click, MouseEvent.MOUSE_CLICKED);
+        assertEventTypesCorrelate(IMouseEvent.Type.Press, MouseEvent.MOUSE_PRESSED);
+        assertEventTypesCorrelate(IMouseEvent.Type.Release, MouseEvent.MOUSE_RELEASED);
+        assertEventTypesCorrelate(IMouseEvent.Type.Move, MouseEvent.MOUSE_MOVED);
+        assertEventTypesCorrelate(IMouseEvent.Type.Move, MouseEvent.MOUSE_DRAGGED);
+    }
+    
+    private void assertEventTypesCorrelate(IMouseEvent.Type type, int awtType) {
+        MouseEvent awtEvent = new SimpleMouseEvent(awtType, 0, 0);
+        assertSame(type, new AwtMouseEvent(awtEvent).getType());
     }
 
     @Test
     public void canvasIsAvailableThroughMouseEvent() {
-        LeftClick leftClick = new LeftClick(0, 0);
-        IMouseEvent event = new AwtMouseEvent(leftClick);
+        IMouseEvent event = new AwtMouseEvent(new SimpleMouseEvent(MouseEvent.MOUSE_CLICKED, 0, 0));
         assertSame(canvas, event.getCanvas());
     }
 
     @Test
     public void coveredNodesAreExtractedProperly() {
-        LeftClick leftClick = new LeftClick(0, 0);
         Node node = new Node();
         node.setSize(10, 10);
         canvas.getCamera().getLayer(0).addChild(node);
         
-        IMouseEvent event = new AwtMouseEvent(leftClick);
+        IMouseEvent event = new AwtMouseEvent(new SimpleMouseEvent(MouseEvent.MOUSE_CLICKED, 0, 0));
         assertEquals(1, event.getCoveredNodes().size());
         assertSame(node, event.getCoveredNodes().get(0));
     }
@@ -65,22 +71,19 @@ public class AwtMouseEventTest {
 
     @Test
     public void globalPositionIsAvailableThroughEvent() {
-        LeftClick leftClick = new LeftClick(0, 0);
         canvas.getCamera().setViewTransform(1, 0, 0, 1, -20, -20);
 
-        IMouseEvent event = new AwtMouseEvent(leftClick);
+        IMouseEvent event = new AwtMouseEvent(new SimpleMouseEvent(MouseEvent.MOUSE_CLICKED, 0, 0));
 
         Point2D globalPoint = event.getGlobalPoint();
+        
         assertEquals(new Point2D.Double(20, 20), globalPoint);
     }
 
     @SuppressWarnings("serial")
-    private class LeftClick extends MouseEvent {
-
-        LeftClick(final int x, final int y) {
-            super(canvas, MouseEvent.MOUSE_CLICKED, System.currentTimeMillis(), InputEvent.BUTTON1_MASK, x, y, 1,
-                            false, MouseEvent.BUTTON1);
+    private class SimpleMouseEvent extends MouseEvent {
+        public SimpleMouseEvent(int type, int x, int y) {
+            super(canvas, type, System.currentTimeMillis(), InputEvent.BUTTON1_MASK, x,y, 1, false, MouseEvent.BUTTON1);
         }
     }
-
 }
