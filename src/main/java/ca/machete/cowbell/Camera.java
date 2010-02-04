@@ -61,6 +61,8 @@ public class Camera extends Node {
         }
 
         paintContext.popTransform();
+        
+        needsPainting = false;
     }
 
     public AffineTransform getViewTransform() {
@@ -141,5 +143,9 @@ public class Camera extends Node {
         } catch (NoninvertibleTransformException e) {
             return null;
         }
+    }
+
+    public boolean needsPainting() {
+        return needsPainting;
     }
 }

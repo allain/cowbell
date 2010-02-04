@@ -56,6 +56,8 @@ public class Node {
 
     private MouseListenerDispatcher mouseEventDispatcher;
 
+    protected boolean needsPainting;
+
     public Node() {
         this(Layout.Null);
     }
@@ -69,6 +71,8 @@ public class Node {
         transform = new AffineTransform();
         children = EMPTY_CHILDREN;
         painters = EMPTY_PAINTERS;
+        
+        needsPainting = true;
     }
 
     public final void addChild(final Node node) {
@@ -128,6 +132,7 @@ public class Node {
         }
 
         paintContext.popTransform();
+        needsPainting = false;
     }
 
     /**
@@ -246,6 +251,8 @@ public class Node {
                 parent.invalidateLayout();
             }
         }
+        
+        repaint();
     }
 
     public void setModel(final Object model) {
@@ -337,5 +344,13 @@ public class Node {
             return IMouseListener.Null;
 
         return mouseEventDispatcher;
+    }
+
+    public void repaint() {
+        if (!needsPainting) {
+            needsPainting = true;
+            if (parent != null && parent.needsPainting)
+                parent.repaint();
+        }
     }
 }

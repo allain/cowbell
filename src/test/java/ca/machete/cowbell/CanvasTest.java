@@ -1,6 +1,7 @@
 package ca.machete.cowbell;
 
 import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertFalse;
 import static org.junit.Assert.assertNull;
 import static org.junit.Assert.assertSame;
 import java.awt.Dimension;
@@ -11,6 +12,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.junit.Before;
 import org.junit.Test;
+import ca.machete.cowbell.activities.Activity;
 
 public class CanvasTest {
 
@@ -185,6 +187,61 @@ public class CanvasTest {
         List<Node> nodesAt = canvas.getNodesAt(5, 5);
         assertEquals(1, nodesAt.size());
         assertSame(stickyNode, nodesAt.get(0));
+    }
 
+    @SuppressWarnings("serial")
+    @Test
+    public void canvasRepaintIsLazy() {
+        Root root = new Root();
+        Camera camera = new Camera();
+        root.addChild(camera);
+        
+        final int[] repaintCount = new int[1];
+
+        Canvas canvas = new Canvas(camera) {
+
+            public void repaint() {
+                repaintCount[0] ++;
+                
+                super.repaint();
+            };
+        };
+        
+        Activity activity = canvas.getRepaintActivity();
+        activity.step(0);
+        camera.paint(new MockPaintContext(10, 10));
+
+        assertFalse(camera.needsPainting());
+        activity.step(0);
+        assertEquals(1, repaintCount[0]);
+    }
+    
+    @SuppressWarnings("serial")
+    @Test
+    public void invalidatePaintBubblesUpToCanvas() {
+        Root root = new Root();
+        Camera camera = new Camera();
+        root.addChild(camera);
+        
+        Layer layer = new Layer();
+        root.addChild(layer);
+        camera.addLayer(layer);
+        
+        final int[] repaintCount = new int[1];
+
+        Canvas canvas = new Canvas(camera) {
+
+            public void repaint() {
+                repaintCount[0] ++;
+                
+                super.repaint();
+            };
+        };
+
+        Activity activity = canvas.getRepaintActivity();
+        activity.step(0);
+        layer.repaint();
+        activity.step(0);
+        assertEquals(2, repaintCount[0]);
     }
 }

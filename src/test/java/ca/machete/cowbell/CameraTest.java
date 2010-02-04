@@ -127,4 +127,17 @@ public class CameraTest {
         camera.setViewTransform(0, 0, 0, 0, 0, 0);
         assertNull(camera.viewToGlobal(new Point2D.Double(5, 5)));
     }
+    
+    @Test
+    public void needsPaintingDefaultsToTrue() {
+        Camera camera = new Camera();
+        assertTrue(camera.needsPainting());
+    }
+    
+    @Test
+    public void needsPaintingBecomesFalseAfterPaint() {
+        Camera camera = new Camera();
+        camera.paint(new MockPaintContext(10, 10));
+        assertFalse(camera.needsPainting());
+    }
 }

@@ -5,6 +5,7 @@ import java.awt.Graphics2D;
 import java.awt.geom.Point2D;
 import java.util.List;
 import javax.swing.JComponent;
+import ca.machete.cowbell.activities.Activity;
 import ca.machete.cowbell.activities.InfiniteActivity;
 import ca.machete.cowbell.events.CanvasInputListener;
 
@@ -14,6 +15,8 @@ public class Canvas extends JComponent {
 
     private final Camera camera;
 
+    private Activity repaintActivity;
+
     public Canvas(final Camera camera) {
         if (camera == null)
             throw new IllegalArgumentException("camera provided to canvas is null");
@@ -22,14 +25,10 @@ public class Canvas extends JComponent {
             throw new IllegalArgumentException("Attemptingto build Canvas using an unattached camera");
 
         this.camera = camera;
-        this.camera.getRoot().getScheduler().schedule(new InfiniteActivity() {
 
-            @Override
-            public void step() {
-                repaint();
-            }
+        this.repaintActivity = new CameraRepaintActivity();
 
-        });
+        this.camera.getRoot().getScheduler().schedule(repaintActivity);
 
         installListeners();
     }
@@ -55,5 +54,19 @@ public class Canvas extends JComponent {
 
     public List<Node> getNodesAt(final int x, final int y) {
         return camera.getNodesAt(new Point2D.Double(x, y));
+    }
+
+    public Activity getRepaintActivity() {
+        return repaintActivity;
+    }
+
+    private final class CameraRepaintActivity extends InfiniteActivity {
+
+        @Override
+        public void step() {
+            if (camera.needsPainting()) {
+                repaint();
+            }
+        }
     }
 }
