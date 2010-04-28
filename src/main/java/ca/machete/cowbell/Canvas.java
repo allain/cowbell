@@ -2,6 +2,7 @@ package ca.machete.cowbell;
 
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.geom.AffineTransform;
 import java.awt.geom.Point2D;
 import java.util.List;
 import javax.swing.JComponent;
@@ -41,6 +42,9 @@ public class Canvas extends JComponent {
 
     @Override
     public void paint(final Graphics graphics) {
+        Graphics2D graphics2D = (Graphics2D)graphics;
+        graphics2D.setTransform(new AffineTransform());
+        System.out.println(((Graphics2D)graphics).getTransform());
         long startTime = System.currentTimeMillis();
         graphics.clipRect(0, 0, getWidth(), getHeight());
         camera.paint(new PaintContext((Graphics2D) graphics));

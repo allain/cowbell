@@ -54,14 +54,14 @@ public class Camera extends Node {
 
         paintContext.pushTransform();
 
-        graphics.transform(transform);
-
+        applyTransform(graphics);
+        
         for (Painter painter : painters) {
             painter.paint(this, paintContext);
         }
 
         paintContext.popTransform();
-        
+
         needsPainting = false;
     }
 
@@ -84,7 +84,7 @@ public class Camera extends Node {
 
     public void setViewTransform(final double[] matrix) {
         this.viewTransform.setTransform(matrix[0], matrix[1], matrix[2], matrix[3], matrix[4], matrix[5]);
-
+        this.needsPainting = true;
     }
 
     public Layer getLayer(final int layerIndex) {

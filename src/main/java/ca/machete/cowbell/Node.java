@@ -71,7 +71,7 @@ public class Node {
         transform = new AffineTransform();
         children = EMPTY_CHILDREN;
         painters = EMPTY_PAINTERS;
-        
+
         needsPainting = true;
     }
 
@@ -89,6 +89,8 @@ public class Node {
 
         children.add(node);
         node.parent = this;
+
+        invalidateLayout();
     }
 
     private void prepareNodeForChildren() {
@@ -110,6 +112,10 @@ public class Node {
             node.parent = null;
         }
 
+        if (removed) {
+            invalidateLayout();
+        }
+
         return removed;
     }
 
@@ -120,19 +126,37 @@ public class Node {
     public void paint(final PaintContext paintContext) {
         Graphics2D graphics = paintContext.getGraphics();
 
-        if (!isVisibleOnGraphics(graphics))
-            return;
+        if (isVisibleOnGraphics(graphics)) {
+            paintContext.pushTransform();
 
-        paintContext.pushTransform();
+            applyTransform(graphics);
+            System.out.println(graphics.getTransform());
+            for (Painter painter : painters) {
+                painter.paint(this, paintContext);
+            }
 
-        graphics.transform(transform);
-
-        for (Painter painter : painters) {
-            painter.paint(this, paintContext);
+            paintContext.popTransform();
+            needsPainting = false;
         }
+    }
 
-        paintContext.popTransform();
-        needsPainting = false;
+    protected void applyTransform(Graphics2D graphics) {
+        switch (transform.getType()) {
+            case AffineTransform.TYPE_IDENTITY:
+                break;
+            case AffineTransform.TYPE_TRANSLATION:
+                graphics.translate(transform.getTranslateX(), transform.getTranslateY());
+                break;
+            /*case AffineTransform.TYPE_UNIFORM_SCALE:
+                double scale = transform.getScaleX();
+                graphics.scale(scale, scale);
+                break;
+            case AffineTransform.TYPE_GENERAL_SCALE:
+                graphics.scale(transform.getScaleX(), transform.getScaleY());
+                break;*/
+            default:
+                graphics.transform(transform);
+        }
     }
 
     /**
@@ -251,7 +275,7 @@ public class Node {
                 parent.invalidateLayout();
             }
         }
-        
+
         repaint();
     }
 

@@ -1,7 +1,7 @@
 package ca.machete.cowbell.util;
 
 import java.awt.geom.AffineTransform;
-import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 public class TransformStack {
@@ -9,7 +9,7 @@ public class TransformStack {
     private final List<AffineTransform> transforms;
 
     public TransformStack() {
-        transforms = new ArrayList<AffineTransform>();
+        transforms = new LinkedList<AffineTransform>();
     }
 
     public void push(final AffineTransform transform) {
